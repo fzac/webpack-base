@@ -1,0 +1,57 @@
+# Javascript Node CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-javascript/ for more details
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/node:8.9
+        name: webpack-base
+    working_directory: ~/webpack-base
+    steps:
+      - checkout
+      - restore_cache:
+          key: v1-dependencies-{{ checksum "package.json" }}
+      - run:
+          name: Install System Dependencies
+          command: sudo apt-get update && sudo apt-get install -qq -y tar gzip
+      - run:
+          name: install dependencies
+          command: yarn install
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
+      - run:
+          name: build production
+          command: yarn run build
+          environment:
+            NODE_ENV: production
+      - run:
+          name: compression
+          command: tar -zcvf dist.tar.gz ./dist
+      - store_artifacts:
+          path: ./dist.tar.gz
+
+  deploy:
+    docker:
+      - image: circleci/node:8.9
+        name: webpack-base
+    steps:
+      - run:
+          name: sync
+          command: echo 'you should add sync'
+
+    working_directory: ~/webpack-base
+
+workflows:
+  version: 2
+  staging-deploy:
+    jobs:
+      - build
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
