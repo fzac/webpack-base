@@ -59,7 +59,14 @@ export default {
         test: /\.css$/,
         use: [
           'style-loader',
-          'css-loader',
+          {
+            loader: 'css-loader',
+            options: {
+              url: true,
+              minimize: false, //圧縮
+              sourceMap: process.env.NODE_ENV !== 'production', //ソースマップツールを有効
+            },
+          },
           {
             loader: 'postcss-loader',
             options: {
