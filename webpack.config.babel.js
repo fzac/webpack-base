@@ -30,7 +30,9 @@ export default {
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        use: 'babel-loader'
+        use: [{
+          loader: 'babel-loader',
+        }]
       },
       {
         test: /\.(ejs|html)$/,
@@ -63,7 +65,6 @@ export default {
             loader: 'css-loader',
             options: {
               url: true,
-              minimize: false, //圧縮
               sourceMap: process.env.NODE_ENV !== 'production', //ソースマップツールを有効
             },
           },
